@@ -84,7 +84,7 @@ var Client = new(function() {
     }
 
     function getUnitHTML(unit, player) {
-      return '<div class="unit" title="' + player.name + '.' + unit.type + '" style="background-color:' + player.color +
+      return '<div data-i="' + unit.pos.i + '" data-j="' + unit.pos.j + '" draggable="true" class="unit" title="' + player.name + '.' + unit.type + '" style="background-color:' + player.color +
         '; background-image:url(../img/units/' + unit.type + '.png); ' + getUnitPos(unit) + '"></div>';
     }
 
@@ -187,8 +187,32 @@ var Client = new(function() {
       GAME = new gameObject(game);
 
       self.printInBody(self.getGameFieldHTML(game));
+
+      moveTo = null;
+      gf = document.querySelector('#game_field');
+
+      function getPosFromHTML(el) {
+        return {
+          i: parseInt(el.dataset.i),
+          j: parseInt(el.dataset.j)
+        };
+      }
+      gf.addEventListener('dragstart', function(e) {
+        GAME.selectUnit(getPosFromHTML(e.target));
+        console.log('dragstart', GAME.selected_unit)
+      });
+      gf.addEventListener('dragover', function(e) {
+        if (e.target.classList.contains('hexagon') && moveTo != e.target) {
+          moveTo = e.target;
+        }
+      });
+      gf.addEventListener('dragend', function(e) {
+        GAME.move(getPosFromHTML(moveTo));
+      });
+
     });
   };
+
 })();
 
 window.onload = Client.onload.bind(Client);
