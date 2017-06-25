@@ -14,6 +14,7 @@ UserSocketGroupList.prototype.getNotFullGroups = function() {
 };
 
 UserSocketGroupList.prototype.getGroupMembers = function(groupName) {
+  console.log('getGroupMembers', groupName)
   return this.groups[groupName].members;
 };
 
@@ -56,6 +57,16 @@ UserSocketGroupList.prototype.groupIsFull = function(groupName) {
 
 UserSocketGroupList.prototype.forEachInGroup = function(groupName, fn) {
   this.getGroupMembers(groupName).forEach(fn);
+};
+
+UserSocketGroupList.prototype.getUsers = function(groupName) {
+  console.log('getUsers!!!', groupName)
+  var res = [],
+    self = this;
+  this.forEachInGroup(groupName, function(s) {
+    res.push(self.users[s.id]);
+  });
+  return res;
 };
 
 module.exports = UserSocketGroupList;

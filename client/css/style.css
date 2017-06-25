@@ -1,0 +1,132 @@
+#game_field {
+  background: black;
+  position: relative;
+  overflow: scroll;
+  height: 550px;
+}
+.row:first-child {
+  margin-top: 0;
+}
+.row {
+  margin-top: -41px;
+}
+.row:nth-child(even) {
+  padding-left: 67px;
+}
+.hexagon {
+  position: relative;
+  display: inline-block;
+  width: 130px;
+  height: 75.06px;
+  margin: 40px 2px;
+  background-image: url(http://csshexagon.com/img/meow.jpg);
+  background-size: auto 150.1111px;
+  background-position: center;
+}
+
+.hexTop,
+.hexBottom {
+  position: absolute;
+  box-sizing: border-box;
+  z-index: 1;
+  width: 91.92px;
+  height: 91.92px;
+  overflow: hidden;
+  -webkit-transform: scaleY(0.5774) rotate(-45deg);
+  -ms-transform: scaleY(0.5774) rotate(-45deg);
+  transform: scaleY(0.5774) rotate(-45deg);
+  background: inherit;
+  left: 19.04px;
+}
+
+/*counter transform the bg image on the caps*/
+.hexTop:after,
+.hexBottom:after {
+  content: "";
+  position: absolute;
+  width: 130.0000px;
+  height: 75.05553499465135px;
+  -webkit-transform:  rotate(45deg) scaleY(1.7321) translateY(-37.5278px);
+  -ms-transform:      rotate(45deg) scaleY(1.7321) translateY(-37.5278px);
+  transform:          rotate(45deg) scaleY(1.7321) translateY(-37.5278px);
+  -webkit-transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  transform-origin: 0 0;
+  background: inherit;
+}
+
+.hexTop {
+  top: -45.9619px;
+}
+
+.hexTop:after {
+  background-position: center top;
+}
+
+.hexBottom {
+  bottom: -45.9619px;
+}
+
+.hexBottom:after {
+  background-position: center bottom;
+}
+
+.hexagon:after {
+  content: "";
+  position: absolute;
+  top: 0.0000px;
+  left: 0;
+  width: 130.0000px;
+  height: 75.0555px;
+  z-index: 2;
+  background: inherit;
+  box-sizing: border-box;
+}
+
+.sand {
+  background-image: url('../img/cells/sand.jpg');
+}
+.sand.hill {
+  background-image: url('../img/cells/hills.png'), url('../img/cells/sand.jpg');
+}
+
+.river_left {
+  box-shadow: -2px 0px 4px 2px skyblue;
+}
+.river_right {
+  box-shadow: 2px 0px 4px 2px skyblue;
+}
+/*.river_bottom_right .hexBottom {
+      box-shadow: -1px 7px 6px -1px skyblue;
+}
+.river_bottom_left .hexBottom {
+      box-shadow: -8px 1px 6px -1px skyblue;
+}*/
+.river_bottom_right.river_bottom_left .hexBottom {
+  box-shadow: -3px 3px 6px 3px skyblue;
+}
+
+
+/*.river_top_left {
+      box-shadow: 0 0 4px 4px skyblue;
+}
+.river_top_right {
+      box-shadow: 0 0 4px 4px skyblue;
+}*/
+.river_top_left.river_top_right .hexTop {
+  box-shadow: 2px -2px 6px 3px skyblue;
+}
+
+.unit {
+    border-radius: 50%;
+    width: 75px;
+    height: 75px;
+    background-color: yellow;
+    background-image: url(../img/units/axe.png);
+    background-position: center center;
+    background-size: 90% 90%;
+    background-repeat: no-repeat;
+    border: 4px solid black;
+    position: absolute;
+    z-index: 100;
+}
