@@ -229,8 +229,35 @@ var Client = new(function() {
             user_name: GAME.current_user
           });
           turn_is_end = true;
-          end_turn_btn.innerText = 'wait for players';
+          end_turn_btn.innerText = 'Wait for players';
         }
+      });
+
+      function heal_for_move_points(unit) {
+        if (unit.health_points < unit.base_health_points) {
+          unit.health_points += 10 / unit.base_move_points * unit.move_points;
+        }
+        if (unit.health_points > unit.base_health_points) {
+          unit.health_points = unit.base_health_points;
+        }
+      }
+
+      function restore_move_points(unit) {
+        unit.move_points = unit.base_move_points;
+      }
+
+      GAME.socket.on('next_turn', function() {
+        turn_is_end = false;
+        end_turn_btn.innerText = 'Next turn';
+
+        for (var user in GAME.units) {
+          for (var i = 0; i < GAME.units[user].length; i++) {
+            heal_for_move_points(GAME.units[user][i]);
+            restore_move_points(GAME.units[user][i]);
+          }
+        }
+
+
       });
 
       function getPosFromHTML(el) {

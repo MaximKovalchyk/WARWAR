@@ -61,6 +61,21 @@
       });
     });
 
+    socket.on('end_turn', function(args) {
+      userGroupsList.groups[args.group_name].turn_end = userGroupsList.groups[args.group_name].turn_end || {};
+      userGroupsList.groups[args.group_name].turn_end[args.user_name] = true;
+
+      if (Object.keys(userGroupsList.groups[args.group_name].turn_end).length === userGroupsList.getMaxGroupLen(args.group_name)) {
+        userGroupsList.forEachInGroup(args.group_name, function(s) {
+          s.emit('next_turn');
+          delete userGroupsList.groups[args.group_name].turn_end;
+        });
+      }
+
+    });
+
+
+
   });
 
 })(3000);
