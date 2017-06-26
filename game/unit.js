@@ -12,66 +12,85 @@ var rangeUnitProto = createUnit(unitProto, {
   range_points: 2,
 });
 
-function createUnit(proto, args) {
-  var unit = Object.create(proto);
+function createUnit(args) {
+  var unit = Object.create(null);
   for (var field in args) {
-    if (args.hasOwnProperty(field)) {
-      unit[field] = args[field];
-    }
+    unit[field] = args[field];
   }
   return unit;
 }
 
 function createGeneral() {
-  return createUnit(unitProto, {
+  return createUnit({
     type: 'general',
     move_points: 3,
+    health_points: 40,
+    attack_points: 5,
+    def_points: 5,
+    experience: 0,
     bonus_list: []
   });
 }
 
 function createAxeMan() {
-  return createUnit(unitProto, {
+  return createUnit({
     type: 'axe',
+    move_points: 2,
+    health_points: 40,
     attack_points: 8,
     def_points: 8,
+    experience: 0,
     bonus_list: []
   });
 }
 
 function createSpearMan() {
-  return createUnit(unitProto, {
+  return createUnit({
     type: 'spear',
+    move_points: 2,
     health_points: 56,
     attack_points: 11,
     def_points: 9,
+    experience: 0,
     bonus_list: ['vs_horse_+_50']
   });
 }
 
 function createHourseMan() {
-  return createUnit(unitProto, {
+  return createUnit({
     type: 'horse',
+    move_points: 4,
     health_points: 75,
     attack_points: 12,
     def_points: 9,
+    experience: 0,
     bonus_list: ['open_+_25']
   });
 }
 
 function createScout() {
-  return createUnit(rangeUnitProto, {
+  return createUnit({
     type: 'scout',
+    move_points: 2,
+    health_points: 40,
+    attack_points: 5,
+    def_points: 5,
+    experience: 0,
+    bonus_list: ['range_unit', 'scout'],
     range_points: 1,
-    bonus_list: ['range_unit', 'scout']
   });
 }
 
 function createArcher() {
   return createUnit(rangeUnitProto, {
     type: 'archer',
-    attack_points: 7,
-    bonus_list: ['range_unit']
+    move_points: 2,
+    health_points: 40,
+    attack_points: 9,
+    def_points: 5,
+    experience: 0,
+    bonus_list: ['range_unit'],
+    range_points: 2,
   });
 }
 
@@ -90,6 +109,8 @@ var UnitGenerator = {
       units[player.name].push(createAxeMan());
       units[player.name].push(createScout());
       units[player.name].push(createScout());
+      units[player.name].push(createArcher());
+      units[player.name].push(createArcher());
     });
     return units;
   }

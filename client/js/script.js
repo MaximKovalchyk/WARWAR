@@ -5,6 +5,7 @@ function gameObject(game_data) {
   this.field = game_data.field;
   this.current_user = game_data.current_user;
   this.socket = game_data.socket;
+  this.group_name = game_data.group_name;
 
   this.selectUnit = function(pos) {
     this.selected_unit = this.units[this.current_user].find(function(unit) {
@@ -21,22 +22,21 @@ function gameObject(game_data) {
   };
 
   this.have_anough_move_points = function(pos) {
-    var movePrice;
-    if (this.selected_unit.bonus_list.indexOf('scout') != -1) {
-      movePrice = 1;
-    } else {
-      movePrice = this.getMovePrice(this.getCell(pos));
-    }
+    var movePrice = this.getMovePrice(this.selected_unit, this.getCell(pos));
     return this.selected_unit.move_points >= movePrice;
   };
 
-  this.getMovePrice = function(cell) {
-    return cell.efects.reduce(function(price, efect) {
-      if (efect === 'move_-_1') {
-        price += 1;
-      }
-      return price;
-    }, 1);
+  this.getMovePrice = function(unit, cell) {
+    if (unit.bonus_list.indexOf('scout') != -1) {
+      return 1;
+    } else {
+      return cell.efects.reduce(function(price, efect) {
+        if (efect === 'move_-_1') {
+          price += 1;
+        }
+        return price;
+      }, 1);
+    }
   };
 
   this.move = function(pos) {
@@ -44,8 +44,33 @@ function gameObject(game_data) {
       if (this.is_next_cell(pos) && this.have_anough_move_points(pos)) {
         console.log('move to', pos);
         //game socket emit
+        this.socket.emit('move_unit', {
+          from: this.selected_unit.pos,
+          to: pos,
+          group_name: this.group_name,
+          user: this.current_user
+        });
       }
     }
+  };
+
+  this.moveUnit = function(args) {
+    var unit = this.units[args.user].find(function(unit) {
+      return unit.pos.i === args.from.i && unit.pos.j === args.from.j;
+    });
+    unit.pos.i = args.to.i;
+    unit.pos.j = args.to.j;
+    unit.move_points -= this.getMovePrice(unit, this.getCell(args.to));
+
+    var CELL_SIZE = 134;
+    var UNIT_SIZE = 100;
+
+    $('.unit[data-i="' + args.from.i + '"][data-j="' + args.from.j + '"]').
+    attr('data-i', args.to.i).
+    attr('data-j', args.to.j).
+    css('left', (args.to.j + 1) * (CELL_SIZE) + ((args.to.i % 2 !== 0) ? CELL_SIZE / 2 : 0) - CELL_SIZE / 2 - UNIT_SIZE / 2).
+    css('top', (args.to.i + 1) * (CELL_SIZE) - CELL_SIZE / 2 - UNIT_SIZE / 2 - Math.floor(args.to.i / 2) * 29.5);
+
   };
 }
 
@@ -188,8 +213,8 @@ var Client = new(function() {
 
       self.printInBody(self.getGameFieldHTML(game));
 
-      moveTo = null;
-      gf = document.querySelector('#game_field');
+      var moveTo = null;
+      var gf = document.querySelector('#game_field');
 
       function getPosFromHTML(el) {
         return {
@@ -209,7 +234,10 @@ var Client = new(function() {
       gf.addEventListener('dragend', function(e) {
         GAME.move(getPosFromHTML(moveTo));
       });
+    });
 
+    socket.on('move_unit', function(args) {
+      GAME.moveUnit(args);
     });
   };
 

@@ -47,12 +47,20 @@
 
       if (userIsAdded && userGroupsList.groupIsFull(group.name)) {
         var game = new Game(userGroupsList.getUsers(group.name));
+        game.group_name = group.name;
         userGroupsList.forEachInGroup(group.name, function(s) {
           game.current_user = userGroupsList.users[s.id].name;
           s.emit('start_game', game);
         });
       }
     });
+
+    socket.on('move_unit', function(args) {
+      userGroupsList.forEachInGroup(args.group_name, function(s) {
+        s.emit('move_unit', args);
+      });
+    });
+
   });
 
 })(3000);
