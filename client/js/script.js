@@ -54,10 +54,85 @@ function gameObject(game_data) {
     }
   };
 
+  this.getAttackVal = function(unit, defUnit, pos) {
+    var res = unit.attack_points;
+    for (var i = 0; i < unit.bonus_list.length; i++) {
+      switch (unit.bonus_list[i]) {
+        case 'vs_horse_+_50':
+          if (defUnit.bonus_list.indexOf('on_horse') > 0) {
+            res *= 1.5;
+          }
+          break;
+        case 'on_horse':
+          if (pos.efects.indexOf('move_-_1') < 0) {
+            res *= 1.25;
+          }
+          break;
+      }
+    }
+    return res;
+  };
+
+  this.getDefVal = function(unit, defUnit, pos) {
+    var res = defUnit.def_points;
+    var no_terr_def_bonus = defUnit.bonus_list.indexOf('on_horse') > 0;
+
+    for (var i = 0; i < defUnit.bonus_list.length; i++) {
+      if (defUnit.bonus_list[i] === 'vs_horse_+_50' && unit.bonus_list.indexOf('on_horse') > 0) {
+        res *= 1.5;
+      }
+    }
+
+    if (!no_terr_def_bonus) {
+      for (i = 0; i < pos.efects.length; i++) {
+        switch (pos.efects[i]) {
+          case 'def_-_25':
+            res *= 0.75;
+            break;
+          case 'def_+_50':
+            res *= 1.5;
+            break;
+        }
+      }
+    }
+    return res;
+  };
+
+  this.delUnit = function(pos) {
+    $('.unit[data-i="' + pos.i + '"][data-j="' + pos.j + '"]').remove();
+  };
+
   this.moveUnit = function(args) {
     var unit = this.units[args.user].find(function(unit) {
       return unit.pos.i === args.from.i && unit.pos.j === args.from.j;
     });
+    var defUnit = this.units[args.user].find(function(unit) {
+      return unit.pos.i === args.to.i && unit.pos.j === args.to.j;
+    });
+
+    if (defUnit) {
+      var cell = this.getCell(args.to);
+      var attackVal = this.getAttackVal(unit, defUnit, cell);
+      var defVal = this.getDefVal(unit, defUnit, cell);
+      var no_win = false;
+      defUnit.health_points -= attackVal;
+      unit.health_points -= defVal;
+      if (defUnit.health_points <= 0) {
+        this.delUnit(args.to);
+      } else {
+        no_win = true;
+      }
+      if (unit.health_points <= 0) {
+        this.delUnit(args.from);
+        return;
+      }
+      if (no_win) {
+        unit.move_points -= this.getMovePrice(unit, this.getCell(cell));
+        return;
+      }
+    }
+
+
     unit.pos.i = args.to.i;
     unit.pos.j = args.to.j;
     unit.move_points -= this.getMovePrice(unit, this.getCell(args.to));

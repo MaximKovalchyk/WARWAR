@@ -52,7 +52,7 @@ function createHourseMan() {
     attack_points: 12,
     def_points: 9,
     experience: 0,
-    bonus_list: ['open_+_25']
+    bonus_list: ['on_horse']
   });
 }
 
@@ -91,14 +91,13 @@ var UnitGenerator = {
       units[player.name].push(createGeneral());
       units[player.name].push(createHourseMan());
       units[player.name].push(createHourseMan());
+      units[player.name].push(createHourseMan());
+      units[player.name].push(createSpearMan());
       units[player.name].push(createSpearMan());
       units[player.name].push(createSpearMan());
       units[player.name].push(createAxeMan());
       units[player.name].push(createAxeMan());
-      units[player.name].push(createScout());
-      units[player.name].push(createScout());
-      units[player.name].push(createArcher());
-      units[player.name].push(createArcher());
+      units[player.name].push(createAxeMan());
     });
     return units;
   }
