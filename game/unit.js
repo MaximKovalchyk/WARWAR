@@ -1,22 +1,10 @@
-var unitProto = {
-  type: null,
-  move_points: 2,
-  health_points: 40,
-  attack_points: 5,
-  def_points: 5,
-  experience: 0,
-  bonus_list: null
-};
-
-var rangeUnitProto = createUnit(unitProto, {
-  range_points: 2,
-});
-
 function createUnit(args) {
   var unit = Object.create(null);
   for (var field in args) {
     unit[field] = args[field];
   }
+  unit.base_health_points = args.health_points;
+  unit.base_move_points = args.move_points;
   return unit;
 }
 
@@ -82,7 +70,7 @@ function createScout() {
 }
 
 function createArcher() {
-  return createUnit(rangeUnitProto, {
+  return createUnit({
     type: 'archer',
     move_points: 2,
     health_points: 40,
