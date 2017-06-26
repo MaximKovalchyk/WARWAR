@@ -75,6 +75,10 @@ function gameObject(game_data) {
 }
 
 var Client = new(function() {
+  this.getGamePanelHTML = function() {
+    var html = '<div id="game_panel"><button id="end_turn">End Turn</button></div>';
+    return html;
+  };
   this.getGameFieldHTML = function(game) {
     var i, j,
       field = game.field,
@@ -211,10 +215,23 @@ var Client = new(function() {
       game.socket = this;
       GAME = new gameObject(game);
 
-      self.printInBody(self.getGameFieldHTML(game));
+      self.printInBody(self.getGameFieldHTML(game) + self.getGamePanelHTML(GAME));
 
       var moveTo = null;
       var gf = document.querySelector('#game_field');
+      var end_turn_btn = document.querySelector('#end_turn');
+      var turn_is_end = false;
+
+      end_turn_btn.addEventListener('click', function() {
+        if (!turn_is_end) {
+          GAME.socket.emit('end_turn', {
+            group_name: GAME.group_name,
+            user_name: GAME.current_user
+          });
+          turn_is_end = true;
+          end_turn_btn.innerText = 'wait for players';
+        }
+      });
 
       function getPosFromHTML(el) {
         return {
