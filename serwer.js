@@ -18,6 +18,12 @@
   http.listen(port, ipaddress, function() {
     console.log('listening on *:' + port);
   });
+  if(process.env.OPENSHIFT_NODEJS_PORT) {
+    self.io.configure(function(){
+      self.io.set("transports", ["websocket"]);
+    });
+  }
+  
 
   io.on('connection', function(socket) {
     socket.on('add_user', function(user) {
