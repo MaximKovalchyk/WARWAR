@@ -1,4 +1,4 @@
-(function Serwer(port) {
+(function Serwer() {
   console.log('main src');
   var express = require('express');
   var app = require('express')();
@@ -6,6 +6,8 @@
   var io = require('socket.io')(http);
   var userGroupsList = new(require('./serwer/UsersSocketGroupList'))();
   var Game = require('./game/game');
+  var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+  var port = process.env.OPENSHIFT_NODEJS_PORT || 3000;
 
   app.use(express.static('client'));
 
@@ -13,7 +15,7 @@
     res.sendFile(__dirname + '/client/index.html');
   });
 
-  http.listen(port, function() {
+  http.listen(port, ipaddress, function() {
     console.log('listening on *:' + port);
   });
 
@@ -78,4 +80,4 @@
 
   });
 
-})(3000);
+})();
